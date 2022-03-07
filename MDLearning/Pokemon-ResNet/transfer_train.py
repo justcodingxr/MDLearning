@@ -108,7 +108,7 @@ def main():
             if val_acc>best_acc:
                  best_acc = val_acc
                  best_epoch = epoch
-                 torch.save(model.state_dict(),'best_model.mdl')
+                 torch.save(model.state_dict(),'transfer_best_model.mdl')
                  print('now_best_acc:',best_acc)
                  # 可视化更好的acc
             viz.line([val_acc], [t], win='val_acc', update='append')
@@ -116,7 +116,7 @@ def main():
 
 
     print('best acc:',best_acc,'best_epoch:',best_epoch)
-    model.load_state_dict(torch.load('best_model.mdl'))#将valdedao的最好的模型用来test
+    model.load_state_dict(torch.load('transfer_best_model.mdl'))#将valdedao的最好的模型用来test
     print('loaded from ckpt!')
 
     #最好的模型来测试,model已经被覆盖了

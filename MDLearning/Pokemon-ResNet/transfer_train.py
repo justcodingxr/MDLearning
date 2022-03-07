@@ -39,7 +39,6 @@ test_loader = DataLoader(db_test, batch_size=batchsz, shuffle=True,
 # for batchidx,(x,label) in enumerate(train_loader)
 
 def showpicture():
-    viz = visdom.Visdom()
     for x, y in train_loader:
         # label是tensor,转换为numpy在转换为str
         viz.text(str(y.numpy()), win='label', opts=dict(title='batch-label'))

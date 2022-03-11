@@ -22,16 +22,18 @@ class featureDataset(Dataset):
 
         # 裁剪,按照train,test对数据集裁剪,6:2:2
         if mode == 'train':
-            self.datas = self.datas[0:int(0.6 * len(self.datas))]
-            self.labels = self.labels[0:int(0.6 * len(self.labels))]
-            #这里是为了测试
+            print('train model!')
+            self.datas = self.datas[0:int(0.01 * len(self.datas))]
+            self.labels = self.labels[0:int(0.01 * len(self.labels))]
+            # 这里是为了测试
         elif mode == 'val':
-            self.datas = self.datas[int(0.6 * len(self.datas)):int(0.8 * len(self.datas))]
-            self.labels = self.labels[int(0.6 * len(self.labels)):int(0.8 * len(self.labels))]
+            print('val model!')
+            self.datas = self.datas[0:int(0.01 * len(self.datas))]
+            self.labels = self.labels[0:int(0.01 * len(self.labels))]
         else:
-            self.datas = self.datas[int(0.8 * len(self.datas)):]
-            self.labels = self.labels[int(0.8 * len(self.labels)):]
-
+            print('test model!')
+            self.datas = self.datas[0:int(0.001 * len(self.datas))]
+            self.labels = self.labels[0:int(0.001 * len(self.labels))]
 
     # 返回数据集大小
     def __len__(self):
@@ -44,10 +46,10 @@ class featureDataset(Dataset):
         li = list(li)
         li = list(map(float, li))
         data = torch.Tensor(li)
-        data = data.view(7, 7)
+        data = data.view(14, 14)
         data = data.unsqueeze(0)  # 加一个channels维度
         data = data.unsqueeze(0)
-        data = data.view(1,7, 7)
+        data = data.view(1,14, 14)
         data = torch.Tensor(data)
         # label = int(self.labels[index])
         label = torch.tensor(self.labels[index])
@@ -96,6 +98,7 @@ class featureDataset(Dataset):
                         # print('i:',i)
 
                     print('write into csv:',readynetdata)
+                f.close()
 
             if os.path.exists(os.path.join(netdirectory,readynetdata)):
                 #read from csv file
@@ -107,6 +110,7 @@ class featureDataset(Dataset):
                         label = int(label) #注意思label眼转换为int
                         labels.append(label)
                         datas.append(data)
+                f.close()
             # print('len(datas:', len(datas), datas)
             # print('len(label:', len(labels), labels)
             # print('data[1]:',datas[1])
@@ -116,7 +120,7 @@ class featureDataset(Dataset):
 
 
 def main():
-    #db_train = featureDataset('UNSW_datas', 'rawnetdata2.csv', 'readydata2.csv','train')
+    #db_train = featureDataset('UNSW_afterclean', 'UNSW_afterclean/UNSW_train.csv', 'UNSW_train_ready.csv','train')
     pass
     # batchsz=32
     # db = featureDataset('UNSW_datas', 'netdata2.csv','netout.csv','train')

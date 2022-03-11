@@ -9,27 +9,27 @@ import visdom
 import time
 from PIL import Image
 import numpy as np
-from featuredataloader import featureDataset
+from UNSW_featerloader import featureDataset
 from ResNet import  ResNet18
 viz = visdom.Visdom()
 
-batchsz = 32
+batchsz = 4
 lr = 1e-3
-epochs = 25
+epochs = 10
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print("using {} device.".format(device))
 torch.manual_seed(1234)
 
-db_train = featureDataset('UNSW_datas', 'UNSW_datas/100_49data.csv', '100_49data_ready.csv','train')
+db_train = featureDataset('UNSW_afterclean', 'UNSW_afterclean/UNSW_train.csv', 'UNSW_train_ready.csv','train')
 train_loader = DataLoader(db_train,  shuffle=True,batch_size=batchsz,
-                          num_workers=12)  # shufftle随机取得[data,labekl]片,但是不会重复;num_workers一次8个进程
+                          num_workers=4)  # shufftle随机取得[data,labekl]片,但是不会重复;num_workers一次8个进程
 
-db_val = featureDataset('UNSW_datas', 'UNSW_datas/100_49data.csv', '100_49data_ready.csv','val')
+db_val = featureDataset('UNSW_afterclean', 'UNSW_afterclean/UNSW_val.csv', 'UNSW_val_ready.csv','val')
 val_loader = DataLoader(db_val,  shuffle=True,batch_size=batchsz,
-                          num_workers=12)  # shufftle随机取得[data,labekl]片,但是不会重复;num_workers一次8个进程
-db_test = featureDataset('UNSW_datas', 'UNSW_datas/100_49data.csv', '100_49data_ready.csv','test')
+                          num_workers=4)  # shufftle随机取得[data,labekl]片,但是不会重复;num_workers一次8个进程
+db_test = featureDataset('UNSW_afterclean', 'UNSW_afterclean/UNSW_test.csv', 'UNSW_test_ready.csv','test')
 test_loader = DataLoader(db_test,  shuffle=True,batch_size=batchsz,
-                          num_workers=12)  # shufftle随机取得[data,labekl]片,但是不会重复;num_workers一次8个进程
+                          num_workers=4)  # shufftle随机取得[data,labekl]片,但是不会重复;num_workers一次8个进程
 #验证和测试用同一个函数
 def evalute(model,loader):
     correct_count = 0

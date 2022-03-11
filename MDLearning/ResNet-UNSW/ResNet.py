@@ -7,9 +7,9 @@ class ResBlock(nn.Module):
     def __init__(self,ch_in,ch_out,stride=1):
         super(ResBlock, self).__init__()
         self.conv1 = nn.Conv2d(ch_in,ch_out,kernel_size=3,stride=stride,padding=1)
-        #self.bn1 = nn.BatchNorm2d(ch_out)
+        self.bn1 = nn.BatchNorm2d(ch_out)
         self.conv2 = nn.Conv2d(ch_out,ch_out, kernel_size=3, stride=1, padding=1)
-        #self.bn2 = nn.BatchNorm2d(ch_out)
+        self.bn2 = nn.BatchNorm2d(ch_out)
 
         #加一个旁路,让x与out数量一样才可以相加;stride=stride和下面必须是一样的
         self.extra = nn.Sequential()#如果in=out,extra(x)相当于不变
@@ -20,10 +20,10 @@ class ResBlock(nn.Module):
             )
 
     def forward(self,x):
-        # out = F.relu(self.bn1(self.conv1(x)))
-        # out = F.relu(self.bn2(self.conv2(out)))
-        out = F.relu(self.conv1(x))
-        out = F.relu(self.conv2(out))
+        out = F.relu(self.bn1(self.conv1(x)))
+        out = F.relu(self.bn2(self.conv2(out)))
+        # out = F.relu(self.conv1(x))
+        # out = F.relu(self.conv2(out))
         out = self.extra(x)+out
         return out
 
@@ -35,7 +35,7 @@ class ResNet18(nn.Module):
        #预处理卷基层
        self.conv1=nn.Sequential(
            nn.Conv2d(1,16,kernel_size=3,stride=2,padding=0),
-           #nn.BatchNorm2d(16)
+           nn.BatchNorm2d(16)
        )
 
        #follow 4 ResBlock,惨差层
@@ -45,7 +45,7 @@ class ResNet18(nn.Module):
        self.b4 = ResBlock(128, 256,stride=2)#chanmel一般不超过512
 
        #全链接层
-       self.outLinear=nn.Linear(256,n)#这里的512由测试决定,受stride影响
+       self.outLinear=nn.Linear(256,n)#这里的256由测试决定,受stride影响
 
     def forward(self,x):
         x = F.relu(self.conv1(x))
@@ -56,7 +56,7 @@ class ResNet18(nn.Module):
         x = self.b4(x)
 
         #print('x.shape:',x.shape)
-        x=F.adaptive_max_pool2d(x,[1,1])#转为[b,512,1,1]
+        x=F.adaptive_max_pool2d(x,[1,1])#转为[b,256,1,1]，不用管size了，看b4通道数为256，所以Linear(256，n）
         #print('x.shape:', x.shape)
         x=x.view(x.size(0),-1)#打平
         #print('x.shape:', x.shape)
@@ -65,7 +65,7 @@ class ResNet18(nn.Module):
         return x
 #一般channels会慢慢增大,为了避免参数也增大,调节stride
 if __name__ == '__main__':
-    temp=torch.randn(1,1,7,7)
+    temp=torch.randn(6,1,14,14)
     res = ResNet18(10)
     out=res(temp)
     print(out.shape)
